@@ -66,6 +66,10 @@ jobs:
           asset_path: .build/arm64-apple-macosx/release/xcbeautify.zip
           asset_name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-arm64-apple-macosx.zip
           asset_content_type: application/zip
+      - name: Create artifact bundle
+        run: |
+          ls -R
+
 
   ubuntu_x86_64:
     name: Release Linux x86_64
@@ -103,5 +107,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
+          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-*
           merge-multiple: true
       - run: ls -R
