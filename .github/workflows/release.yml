@@ -112,7 +112,6 @@ jobs:
       - name: Display structure of downloaded files
         uses: actions/download-artifact@v4
         with:
-          path: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
-          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-*
+          name: xcbeautify*
           merge-multiple: true
       - run: ls -R xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
