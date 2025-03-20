@@ -69,8 +69,8 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-arm64-apple-macosx
-          path: .build/arm64-apple-macosx/release/xcbeautify
+          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-arm64-apple-macosx.zip
+          path: .build/x86_64-apple-macosx/release/xcbeautify.zip
 
   ubuntu_x86_64:
     name: Release Linux x86_64
@@ -101,8 +101,8 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-x86_64-unknown-linux-gnu
-          path: xcbeautify
+          name: xcbeautify-${{ needs.create_release.outputs.tag_name }}-x86_64-unknown-linux-gnu.tar.xz
+          path: xcbeautify.tar.xz
 
   artifact_bundle:
     name: Create ArtifactBundle
@@ -114,5 +114,6 @@ jobs:
       - name: Display structure of downloaded files
         uses: actions/download-artifact@v4
         with:
+          path: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
           merge-multiple: true
       - run: ls -R
