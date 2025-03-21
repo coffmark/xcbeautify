@@ -105,7 +105,7 @@ jobs:
           path: xcbeautify.tar.xz
 
   artifact_bundle:
-    name: Create ArtifactBundle
+    name: Create artifact bundle
     runs-on: ubuntu-22.04
     needs: [create_release, macos, ubuntu_x86_64]
     steps:
@@ -116,4 +116,34 @@ jobs:
         with:
           path: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
           merge-multiple: true
-      - run: ls -R
+      - name: Create artifact bundle
+        run: |
+          ARTIFACT_BUNDLE_DIR=xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle
+
+          # info.json
+          cp info.json $ARTIFACT_BUNDLE_DIR
+          sed -i '' "s/{{VERSION}}/${{ needs.create_release.outputs.tag_name }}/" $ARTIFACT_BUNDLE_DIR/info.json
+
+          # macOS binary
+          mkdir -p $ARTIFACT_BUNDLE_DIR/xcbeautify-${{ needs.create_release.outputs.tag_name }}-macos/bin
+          unzip $ARTIFACT_BUNDLE_DIR/xcbeautify.zip -d $ARTIFACT_BUNDLE_DIR/xcbeautify-${{ needs.create_release.outputs.tag_name }}-macos/bin
+          rm $ARTIFACT_BUNDLE_DIR/xcbeautify.zip
+
+          # Linux binary
+          mkdir -p $ARTIFACT_BUNDLE_DIR/xcbeautify-${{ needs.create_release.outputs.tag_name }}-linux-gnu/bin
+          tar -xJf $ARTIFACT_BUNDLE_DIR/xcbeautify.tar.xz -C $ARTIFACT_BUNDLE_DIR/xcbeautify-${{ needs.create_release.outputs.tag_name }}-linux-gnu/bin
+          rm $ARTIFACT_BUNDLE_DIR/xcbeautify.tar.xz
+
+          # Archive
+          zip -r $ARTIFACT_BUNDLE_DIR.zip $ARTIFACT_BUNDLE_DIR
+      - name: Archive artifact bundle
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle.zip
+          asset_name: xcbeautify-${{ needs.create_release.outputs.tag_name }}.artifactbundle.zip
+          asset_content_type: application/zip
+      - name: ls -R
+        run: ls -R
